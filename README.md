@@ -32,7 +32,7 @@ Click the below links for the steps to Deploy this application.
 <br>
 
 Here we are using various services of AWS like – Route53, VPC, RDS, EC2 – Launch Template, EC2 – AutoScaling Group, Ec2 – Load Balancer, and EC2 – Instances. 
-<br>For steps visit page: https://devopsinterview.in/ha-fault-tolerant-web-app-deployment-in-aws/ 
+<br>For steps visit page: https://devopsenlight.com/ha-fault-tolerant-web-app-deployment-in-aws/ 
 
 <br>
 <br>
@@ -43,7 +43,7 @@ Here we are using various services of AWS like – Route53, VPC, RDS, EC2 – La
 
 <br>
 Here for testing/learning purposes, we are using just one EC2 instance to install the frontend, backend, and database.
-<br>For steps visit the page: https://devopsinterview.in/three-tier-web-application-deployment-in-aws-ec2/
+<br>For steps visit the page: https://devopsenlight.com/three-tier-web-application-deployment-in-aws-ec2/
 
 <br>
 <br>
@@ -52,6 +52,6 @@ Here for testing/learning purposes, we are using just one EC2 instance to instal
 
 
 
-Please feel free to contact us for any queries: https://devopsinterview.in/contact-us/ 
+Please feel free to contact us for any queries: https://devopsenlight.com/contact-us/ 
 
 
