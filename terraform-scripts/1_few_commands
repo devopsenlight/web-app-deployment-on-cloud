@@ -1,0 +1,29 @@
+- vi examples.tfvars    - this file needs to be updated as per user config/zone
+
+- terraform init
+- terraform apply -var-file=examples.tfvars
+- terraform plan -var-file=examples.tfvars
+- terraform destroy -var-file=examples.tfvars
+
+- Can store below files in github to save terraform state: 
+  .terraform.lock.hcl terraform.tfstate terraform.tfstate.backup .terraform
+
+- Setup (configure) eks 
+aws eks --region ap-south-1 update-kubeconfig --name webapp-dev --alias iams
+kubectl config set-context --current
+kubectl config view
+kubectl get nodes
+
+chmod 600 /root/.kube/config
+
+- helm command:
+  helm create frontend_webapp
+  helm package .
+  helm install backend ./webapp_tf-0.1.0.tgz
+  heml list
+  helm uninstall frontendapp
+DESIRED_VERSION=v3.8.2 bash get_helm.sh
+
+kubectl get All
+kubectl get pods
+kubectl get services

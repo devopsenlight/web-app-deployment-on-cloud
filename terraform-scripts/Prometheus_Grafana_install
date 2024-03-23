@@ -1,0 +1,80 @@
+1. Installing the Kubernetes Metrics Server
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+kubectl get deployment metrics-server -n kube-system
+
+2. Install Prometheus
+-Instead of the step in this amazon page: Creating the Amazon EBS CSI driver IAM role: https://docs.aws.amazon.com/eks/latest/userguide/csi-iam-role.html
+Add AmazonEBSCSIDriverPolicy policy in node-group role i.e. noderole
+-Managing the Amazon EBS CSI driver as an Amazon EKS add-on: https://docs.aws.amazon.com/eks/latest/userguide/managing-ebs-csi.html
+kubectl create namespace prometheus
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm upgrade -i prometheus prometheus-community/prometheus \
+    --namespace prometheus \
+    --set alertmanager.persistentVolume.storageClass="gp2",server.persistentVolume.storageClass="gp2"
+kubectl get pods -n prometheus
+kubectl expose service prometheus-server --type=LoadBalancer --name=prometheus-loadbalancer --port=9090 -n prometheus
+kubectl get --raw /metrics (Optional)
+
+
+3. Install Grafana
+a. Copy paste the following in a YAML file, name it grafana.yaml
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      url: http://prometheus-server.prometheus.svc.cluster.local
+      access: proxy
+      isDefault: true
+
+b. Grab Grafana Helm charts
+helm repo add grafana https://grafana.github.io/helm-charts
+
+c. Install Grafana
+kubectl create namespace grafana
+
+helm install grafana grafana/grafana \
+    --namespace grafana \
+    --set persistence.storageClassName="gp2" \
+    --set persistence.enabled=true \
+    --set adminPassword='EKS!sAWSome' \
+    --values grafana.yaml \
+    --set service.type=LoadBalancer
+
+d. Check if Grafana is deployed properly
+kubectl get all -n grafana
+
+e. Get Grafana ELB url
+export ELB=$(kubectl get svc -n grafana grafana -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+
+echo "http://$ELB"
+
+f. When logging in, use username "admin" and get password by running the following:
+kubectl get secret --namespace grafana grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+
+
+g. Grafana Dashboards for K8s:
+https://grafana.com/grafana/dashboards?dataSource=prometheus&direction=desc&orderBy=reviewsCount
+Add dashboard : 3119 and select prometheus
+
+
+
+
+
+4. To Uninstall Prometheus, Grafana and k8s metrics server
+helm uninstall prometheus --namespace prometheus
+helm uninstall grafana --namespace grafana
+kubectl delete -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+
+Delete from Amazon console - go to AWS EKS - Add-on - Delete manually added aws-ebs-csi-driver
+
+
+
+
+
+
+Ref:
+https://docs.aws.amazon.com/eks/latest/userguide/metrics-server.html
+https://docs.aws.amazon.com/eks/latest/userguide/prometheus.html

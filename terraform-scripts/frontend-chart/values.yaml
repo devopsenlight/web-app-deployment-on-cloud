@@ -1,0 +1,5 @@
+replicaCount: 3
+fullname: frontend
+image:
+  repository: 976995869248.dkr.ecr.ap-south-1.amazonaws.com/shoewebapp
+  tag: weabpp-fe

@@ -1,0 +1,69 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.37.3.1">
+      <projectUrl>https://github.com/techieinterest/web-app-deployment-on-cloud.git/</projectUrl>
+      <displayName></displayName>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@330.v645b_7df10e2a_">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@5.2.1">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>https://github.com/techieinterest/web-app-deployment-on-cloud.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/main</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="empty-list"/>
+    <extensions/>
+  </scm>
+  <assignedNode>jobs</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers>
+    <com.cloudbees.jenkins.GitHubPushTrigger plugin="github@1.37.3.1">
+      <spec></spec>
+    </com.cloudbees.jenkins.GitHubPushTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>prepend=$(date &quot;+%Y_%m_%d_%H_%M&quot;)
+cd dockerfiles/backend/
+sudo -u root systemctl restart docker
+sudo -u root docker build . --no-cache -t webapp-back-${prepend}
+sudo -u root aws ecr get-login-password --region ap-south-1 | sudo -u root docker login --username AWS --password-stdin 976995869248.dkr.ecr.ap-south-1.amazonaws.com
+sudo -u root docker tag webapp-back-${prepend}:latest 976995869248.dkr.ecr.ap-south-1.amazonaws.com/shoewebapp:webapp-back-${prepend}
+sudo -u root docker push 976995869248.dkr.ecr.ap-south-1.amazonaws.com/shoewebapp:webapp-back-${prepend}
+
+cd ../frontend/
+sudo -u root docker build . --no-cache -t webapp-front-${prepend}
+sudo -u root docker tag webapp-front-${prepend}:latest 976995869248.dkr.ecr.ap-south-1.amazonaws.com/shoewebapp:webapp-front-${prepend}
+sudo -u root docker push 976995869248.dkr.ecr.ap-south-1.amazonaws.com/shoewebapp:webapp-front-${prepend}</command>
+      <configuredLocalRules/>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers>
+    <hudson.plugins.ws__cleanup.PreBuildCleanup plugin="ws-cleanup@0.45">
+      <deleteDirs>false</deleteDirs>
+      <cleanupParameter></cleanupParameter>
+      <externalDelete></externalDelete>
+      <disableDeferredWipeout>false</disableDeferredWipeout>
+    </hudson.plugins.ws__cleanup.PreBuildCleanup>
+  </buildWrappers>
+</project>
